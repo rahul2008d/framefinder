@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CloudUpload, CheckCircle, Loader2, X } from "lucide-react";
+import { CloudUpload, CheckCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface UploadVideoProps {
@@ -21,11 +21,55 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
     if (!file) return;
 
     setUploading(true);
-    setTimeout(() => {
-      setUploading(false);
+
+    try {
+      const fileName = encodeURIComponent(file.name);
+
+      // 🔹 Step 1: Request a signed URL from the backend
+      const response = await fetch(
+        "http://127.0.0.1:8000/video/get-signed-url/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file_name: fileName }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to get upload URL");
+
+      const { signedUrl } = await response.json();
+
+      if (!signedUrl) throw new Error("Invalid upload URL received");
+
+      // 🔹 Step 2: Upload file to Supabase Storage via Signed URL
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) throw new Error("File upload failed");
+
+      const metadataResponse = await fetch(
+        "http://127.0.0.1:8000/video/update-metadata/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file_name: fileName }),
+        }
+      );
+
+      if (!metadataResponse.ok) throw new Error("Failed to update metadata");
+
+      // 🔹 Step 4: Update UI
       setUploaded(true);
-      onUploadSuccess(file.name); // Notify parent component
-    }, 2000); // Simulated upload delay
+      onUploadSuccess(file.name);
+    } catch (error) {
+      console.error("❌ Upload failed:", error);
+      alert("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -33,6 +77,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
       className="w-full max-w-lg mx-auto bg-gray-800 bg-opacity-80 backdrop-blur-md shadow-lg rounded-lg p-6 text-white"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, delay: 0.2 }}
       exit={{ opacity: 0, scale: 0.9 }}
     >
       {!uploaded ? (

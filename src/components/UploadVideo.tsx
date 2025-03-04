@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { CloudUpload, CheckCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { uploadFileToS3, fetchWithRetry } from "../utils";
+import ProgressIndicator from "./ProgressIndicator";
 
 interface UploadVideoProps {
   onUploadSuccess: (fileName: string) => void;
@@ -10,6 +12,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploaded, setUploaded] = useState<boolean>(false);
+  const [uploadStep, setUploadStep] = useState<number>(0);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0] || null;
@@ -21,47 +24,50 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
     if (!file) return;
 
     setUploading(true);
+    setUploadStep(1);
 
     try {
       const fileName = encodeURIComponent(file.name);
 
-      // 🔹 Step 1: Request a signed URL from the backend
-      const response = await fetch(
-        "http://127.0.0.1:8000/video/get-signed-url/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file_name: fileName }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to get upload URL");
-
-      const { signedUrl } = await response.json();
-
-      if (!signedUrl) throw new Error("Invalid upload URL received");
-
-      // 🔹 Step 2: Upload file to Supabase Storage via Signed URL
-      const uploadResponse = await fetch(signedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
+      const signedUrlResponse = await fetchWithRetry<{
+        url: string;
+        fields: Record<string, string>;
+      }>(`${import.meta.env.VITE_SERVER}/video/get-signed-url/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_name: fileName }),
       });
 
-      if (!uploadResponse.ok) throw new Error("File upload failed");
+      if (!signedUrlResponse.url || !signedUrlResponse.fields) {
+        throw new Error("Invalid signed URL response.");
+      }
 
-      const metadataResponse = await fetch(
-        "http://127.0.0.1:8000/video/update-metadata/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file_name: fileName }),
-        }
+      // 🔹 Step 2: Upload file using POST request with FormData
+      setUploadStep(2);
+      const uploadSuccess = await uploadFileToS3(
+        signedUrlResponse.url,
+        signedUrlResponse.fields,
+        file
       );
+      if (!uploadSuccess) throw new Error("File upload failed");
 
-      if (!metadataResponse.ok) throw new Error("Failed to update metadata");
+      // Step 3: Process the video
+      setUploadStep(3);
+      const response = await fetchWithRetry<{
+        message: string;
+        total_chunks: number;
+      }>(`${import.meta.env.VITE_SERVER}/video/process_video/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_name: fileName }),
+      });
+
+      if (!response.message || typeof response.total_chunks !== "number") {
+        throw new Error("Invalid process video response.");
+      }
 
       // 🔹 Step 4: Update UI
+      setUploadStep(4);
       setUploaded(true);
       onUploadSuccess(file.name);
     } catch (error) {
@@ -82,9 +88,12 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
     >
       {!uploaded ? (
         <>
+          {uploading && <ProgressIndicator step={uploadStep} totalSteps={4} />}
           <h2 className="text-xl font-semibold text-center mb-4">
             📤 Upload Video
           </h2>
+          {/* Progress Indicator */}
+
           <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-600 rounded-lg py-10 cursor-pointer hover:border-blue-500 transition-all">
             <input
               type="file"

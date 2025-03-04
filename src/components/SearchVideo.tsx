@@ -7,17 +7,26 @@ interface SearchVideoProps {
 
 const SearchVideo: React.FC<SearchVideoProps> = ({ uploadedFileName }) => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<string[]>([]); // Replace with actual video clips data
+  const [results, setResults] = useState<string>(""); // Replace with actual video clips data
 
   const handleSearch = async () => {
     if (!query.trim()) return;
 
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_SERVER
+      }/search/search_clip/?query=${encodeURIComponent(query)}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch search results.");
+    }
+
+    const data = await response.json();
     // Simulated search result
-    setResults([
-      `Clip 1 matching "${query}"`,
-      `Clip 2 matching "${query}"`,
-      `Clip 3 matching "${query}"`,
-    ]);
+    setResults(
+      `🎬 Matching Clip Found! From ${data.start_time}s To: ${data.end_time}s`
+    );
   };
 
   return (
@@ -50,15 +59,10 @@ const SearchVideo: React.FC<SearchVideoProps> = ({ uploadedFileName }) => {
 
           {/* Search Results */}
           <div className="mt-4 space-y-2">
-            {results.length > 0 ? (
-              results.map((clip, index) => (
-                <div
-                  key={index}
-                  className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-all"
-                >
-                  🎬 {clip}
-                </div>
-              ))
+            {results ? (
+              <div className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-all">
+                {results}
+              </div>
             ) : (
               <p className="text-gray-400 text-center mt-4">
                 No results found.

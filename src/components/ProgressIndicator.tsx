@@ -13,7 +13,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 
   const stepMessages = [
     "🔹 Getting signed URL...",
-    "🔹 Uploading to S3...",
+    "🔹 Uploading to the Server...",
     "🔹 Processing video...",
     "✅ Upload complete!",
   ];

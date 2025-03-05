@@ -54,6 +54,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
       // Step 3: Process the video
       setUploadStep(3);
       const response = await fetchWithRetry<{
+        url: string;
         message: string;
         total_chunks: number;
       }>(`${import.meta.env.VITE_SERVER}/video/process_video/`, {
@@ -69,7 +70,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ onUploadSuccess }) => {
       // 🔹 Step 4: Update UI
       setUploadStep(4);
       setUploaded(true);
-      onUploadSuccess(file.name);
+      onUploadSuccess(response?.url);
     } catch (error) {
       console.error("❌ Upload failed:", error);
       alert("Upload failed. Please try again.");

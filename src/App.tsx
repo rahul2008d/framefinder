@@ -4,7 +4,7 @@ import SearchVideo from "./components/SearchVideo";
 import UploadVideo from "./components/UploadVideo";
 
 export default function App() {
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>("");
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
@@ -25,7 +25,7 @@ export default function App() {
         {/* Show uploaded file name after success */}
         {uploadedFileName && (
           <p className="text-green-400 text-center text-lg font-semibold">
-            ✅ {uploadedFileName} uploaded successfully!
+            ✅ Uploaded successfully!
           </p>
         )}
 

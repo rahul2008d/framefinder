@@ -1,54 +1,56 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-4.9.5-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-5.0.0-646CFF?logo=vite" alt="Vite" />
+  <img src="https://img.shields.io/badge/TailwindCSS-3.4.1-38B2AC  alt="Tailwind CSS" />
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<h1 align="center">🚀 FrameFinder Frontend</h1>
+<p align="center"><strong>A blazing-fast, AI-powered video search app built with React, TypeScript, Vite, and Tailwind CSS</strong></p>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Overview
 
-## Expanding the ESLint configuration
+Welcome to **FrameFinder**, a sleek, modern frontend application that transforms how users search within videos! Powered by **React** and **TypeScript**, this project leverages **Vite** for lightning-fast builds and **Tailwind CSS** for a stunning, responsive UI. Designed with a focus on **UI/UX excellence**, FrameFinder combines smooth animations, intuitive workflows, and robust state management to deliver a delightful user experience.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+With features like S3-powered video uploads, AI-driven clip search, and a polished interface, this project showcases cutting-edge frontend development skills—perfect for recruiters looking for talent in **React**, **TypeScript**, and modern web design!
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🎨 Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Video Upload with S3**: Seamlessly upload videos using pre-signed S3 URLs, with a dynamic **ProgressIndicator** for real-time feedback.
+- **AI-Powered Search**: Search video content with precision, displaying clips with start/end timestamps using a robust backend integration.
+- **Responsive Design**: Crafted with **Tailwind CSS** for a pixel-perfect, mobile-first layout that shines on any device.
+- **Smooth Animations**: Powered by **Framer Motion** for fluid transitions and engaging micro-interactions.
+- **Type-Safe Code**: Built with **TypeScript** for strong typing, reducing bugs and boosting maintainability.
+- **Fast Development**: Utilizes **Vite** for instant HMR (Hot Module Replacement) and optimized builds.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+---
+
+## 🛠️ Tech Stack
+
+- **React**: Component-based architecture with hooks (`useState`, `useEffect`) for efficient state management and lifecycle handling.
+- **TypeScript**: Strict typing for props, state, and API responses, ensuring code reliability and scalability.
+- **Vite**: Next-gen bundler for rapid development and production builds.
+- **Tailwind CSS**: Utility-first CSS framework for rapid, maintainable styling with a custom dark theme.
+- **Framer Motion**: Declarative animations for a polished, professional feel.
+- **Lucide Icons**: Lightweight, customizable icons for a modern aesthetic.
+
+---
+
+## 🖼️ Project Structure
+
+```plaintext
+src/
+├── components/
+│   ├── Footer.tsx         # Sticky footer with minimal design
+│   ├── ProgressIndicator.tsx # Animated progress bar with step messages
+│   ├── SearchVideo.tsx    # Video search UI with playback controls
+│   └── UploadVideo.tsx    # File upload with S3 integration
+├── utils/
+│   ├── fetchWithRetry.ts  # Utility for resilient API calls
+│   └── uploadFileToS3.ts  # S3 upload logic with FormData
+└── App.tsx                # Main app with conditional rendering
 ```

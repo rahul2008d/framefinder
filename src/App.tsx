@@ -30,9 +30,11 @@ export default function App() {
         )}
 
         {/* Search Section - Change text after upload */}
-        <section className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-md">
-          <SearchVideo uploadedFileName={uploadedFileName} />
-        </section>
+        {uploadedFileName && (
+          <section className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-md">
+            <SearchVideo uploadedFileName={uploadedFileName} />
+          </section>
+        )}
       </main>
 
       {/* Footer */}

@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { CircleX } from "lucide-react";
+import { CircleX, PartyPopper, Play } from "lucide-react";
 
 interface SearchVideoProps {
   uploadedFileName: string | null;
@@ -120,33 +120,40 @@ const SearchVideo: React.FC<SearchVideoProps> = ({ uploadedFileName }) => {
           </form>
 
           {/* Search Results */}
-          <div className="mt-4 space-y-3 bg-gray-800 bg-opacity-30 p-5 rounded-lg">
-            {startTime ? (
-              <div className="flex justify-between items-center p-4 rounded-lg transition-all bg-gray-700/50 backdrop-blur-md">
-                <span className="text-white text-lg font-medium">
-                  Matching Clip Found! From {startTime}s To: {startTime + 5}s
-                </span>
-                <motion.button
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: "0px 4px 12px rgba(255, 255, 255, 0.2)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={playFromTime} // Pass dynamic start time if needed
-                  className="flex items-center gap-3 px-5 py-2 text-white cursor-pointer bg-gray-600 rounded-full shadow-sm transition hover:bg-gray-500 active:scale-95"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading..." : "▶️ Play Clip"}
-                </motion.button>
-              </div>
-            ) : (
-              query && (
+          {startTime !== 0 && (
+            <div className="mt-4 space-y-3 bg-gray-800 bg-opacity-30 p-5 rounded-lg">
+              {startTime ? (
+                <div className="w-full flex justify-between items-center p-2 rounded-lg transition-all bg-gray-700/50 backdrop-blur-md">
+                  <span className="text-white flex-1 text-lg flex  font-medium gap-2">
+                    <PartyPopper /> Matching Clip Found! From {startTime}s To:
+                    {startTime + 5}s
+                  </span>
+                  <motion.button
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0px 4px 12px rgba(255, 255, 255, 0.2)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={playFromTime} // Pass dynamic start time if needed
+                    className="flex items-center gap-3 p-2 h-16 w-16 text-white cursor-pointer bg-gray-600 rounded-full shadow-sm transition hover:bg-gray-500 active:scale-95"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <p className="text-xs">Loading...</p>
+                    ) : (
+                      <p className="ml-3">
+                        <Play />
+                      </p>
+                    )}
+                  </motion.button>
+                </div>
+              ) : (
                 <p className="text-gray-400 text-center mt-4 text-base italic">
-                  No results found.
+                  No results found...
                 </p>
-              )
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Error Display */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}

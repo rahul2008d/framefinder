@@ -1,47 +1,32 @@
 import { motion } from "framer-motion";
 
-interface ProgressIndicatorProps {
-  step: number;
-  totalSteps: number;
-}
-
-const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
-  step,
-  totalSteps,
-}) => {
-  const progressPercentage = (step / totalSteps) * 100;
-
-  const stepMessages = [
-    "🔹 Getting signed URL...",
-    "🔹 Uploading to the Server...",
-    "🔹 Processing video...",
-    "✅ Upload complete!",
+export default function ProgressIndicator({ step, totalSteps }: { step: number; totalSteps: number }) {
+  const steps = [
+    "Getting signed URL…",
+    "Uploading to S3…",
+    "Processing video…",
+    "Done!",
   ];
+  const pct = Math.min(100, Math.max(0, (step / totalSteps) * 100));
 
   return (
-    <div className="mt-4">
-      {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
+    <div className="mb-3">
+      <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
         <motion.div
-          className="bg-blue-500 h-2.5 rounded-full"
-          initial={{ width: "0%" }}
-          animate={{ width: `${progressPercentage}%` }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="h-full bg-gradient-to-r from-sky-400 to-cyan-300"
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.35 }}
         />
       </div>
-
-      {/* Step Message Animation */}
       <motion.p
-        className="mt-2 text-sm text-gray-600"
         key={step}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, y: 2 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-2 text-xs text-slate-300"
       >
-        {stepMessages[step - 1]}
+        {steps[Math.max(0, Math.min(steps.length - 1, step - 1))]}
       </motion.p>
     </div>
   );
-};
-
-export default ProgressIndicator;
+}

@@ -32,7 +32,7 @@ export default function SearchVideo({ videoUrl, videoKey }: SearchVideoProps) {
       const res = await fetch(`${server}/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ video_key: videoKey, query, k: 5 }),
+        body: JSON.stringify({ video_key: videoKey, query, k: 2 }),
       });
       if (res.status === 202) {
         toast("Index is building — try again in a few seconds.", {
@@ -141,7 +141,7 @@ export default function SearchVideo({ videoUrl, videoKey }: SearchVideoProps) {
       <div className="mt-4 space-y-3">
         {hits.length > 0 && (
           <div className="space-y-2">
-            {hits.slice(0, 5).map((h, i) => (
+            {hits.slice(0, 2).map((h, i) => (
               <motion.div
                 key={`${h.start_sec}-${i}`}
                 initial={{ opacity: 0, y: 4 }}
@@ -152,8 +152,8 @@ export default function SearchVideo({ videoUrl, videoKey }: SearchVideoProps) {
                   }`}
               >
                 <div className="text-sm">
-                  <div className="text-slate-200">Match #{i + 1}</div>
-                  <div className="text-slate-400">
+                  <div className="text-emerald-400/60">Match #{i + 1}</div>
+                  <div className="text-slate-600">
                     Start: {h.start_sec}s{" "}
                     {h.score ? `• score ${h.score.toFixed(2)}` : ""}
                   </div>
@@ -163,7 +163,7 @@ export default function SearchVideo({ videoUrl, videoKey }: SearchVideoProps) {
                     setStartTime(h.start_sec);
                     playFrom(h.start_sec);
                   }}
-                  className="inline-flex items-center gap-2 rounded-full bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-sm"
+                  className="inline-flex items-center gap-2 rounded-full bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-sm cursor-pointer text-slate-200 transition-colors"
                 >
                   <Play className="h-4 w-4" /> Play
                 </button>

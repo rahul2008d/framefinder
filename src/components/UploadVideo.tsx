@@ -233,7 +233,7 @@ export default function UploadVideo({ onUploadSuccess }: UploadVideoProps) {
       {file && (
         <div className="mt-3 flex items-center justify-between rounded-xl border border-white/15 bg-white/5 px-3 py-2">
           <div className="text-sm text-emerald-500 truncate">
-            <CircleCheck className="inline h-4 w-4 mr-1" /> Selected : &nbsp;
+            <CircleCheck className="inline h-8 w-8 mr-1" /> Selected : &nbsp;
             <span className="font-medium text-emerald-500">{file.name}</span>
           </div>
           <button
